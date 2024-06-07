@@ -61,15 +61,12 @@ export const handleReader = async (
 	const decoder = new TextDecoder("utf-8");
 
 	try {
-		let responded = false;
 		// This solution breaks on Safari or any fetch polyfill without AsyncIterators, but it works for node-fetch.
 		// response.body has an asyncIterator in modern most browsers
 		// @ts-ignore
 		for await (const chunk of response.body) {
 			cb(JSON.parse(decoder.decode(chunk).replace(/^data: /, "")));
-			if (!responded) responded = true;
 		}
-		if (!responded) throw new Error("No response from Gemini");
 	}
 	catch (e) {
 		if (e instanceof SafetyError) throw e;
