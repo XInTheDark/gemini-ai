@@ -69,7 +69,7 @@ export const handleReader = async (
 			cb(JSON.parse(decoder.decode(chunk).replace(/^data: /, "")));
 			if (!responded) responded = true;
 		}
-		if (!responded) throw new SafetyError("No response from Gemini");
+		if (!responded) throw new Error("No response from Gemini");
 	}
 	catch (e) {
 		if (e instanceof SafetyError) throw e;
