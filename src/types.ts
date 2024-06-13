@@ -20,7 +20,22 @@ type FileType =
 	| "video/mpg"
 	| "video/webm"
 	| "video/wmv"
-	| "video/3gpp";
+	| "video/3gpp"
+	| "text/plain"
+	| "text/html"
+	| "text/css"
+	| "text/javascript"
+	| "application/x-javascript"
+	| "text/x-typescript"
+	| "application/x-typescript"
+	| "text/csv"
+	| "text/markdown"
+	| "text/x-python"
+	| "application/x-python-code"
+	| "application/json"
+	| "text/xml"
+	| "application/rtf"
+	| "text/rtf";
 
 type RemoteFilePart = { fileData: { mime_type: FileType; fileUri: string } };
 
@@ -35,6 +50,11 @@ type Role = "user" | "model" | "system";
 type SafetyRating = { category: string; probability: string };
 
 export type Message = { parts: Part[]; role: Role };
+
+export type FileUpload = { buffer: ArrayBuffer, filePath: string };
+export function isFileUpload(data: any): data is FileUpload {
+	return data && data.buffer && data.filePath;
+}
 
 export type PromptFeedback = {
 	blockReason?: string;

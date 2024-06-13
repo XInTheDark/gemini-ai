@@ -1,4 +1,4 @@
-import { Command, HarmCategory, SafetyThreshold, SchemaType } from "./types";
+import {Command, HarmCategory, SafetyThreshold, SchemaType, isFileUpload } from "./types";
 
 import type {
 	ChatAskOptions,
@@ -9,6 +9,7 @@ import type {
 	FormatType,
 	GeminiOptions,
 	GeminiResponse,
+	FileUpload,
 	Message,
 	Part,
 	QueryBodyMap,
@@ -101,7 +102,7 @@ const uploadFile = async ({
 };
 
 export const messageToParts = async (
-	messages: (Uint8Array | ArrayBuffer | string)[],
+	messages: (Uint8Array | ArrayBuffer | FileUpload | string)[],
 	gemini: Gemini,
 ): Promise<Part[]> => {
 	const parts = [];
@@ -110,19 +111,22 @@ export const messageToParts = async (
 	for (const msg of messages) {
 		if (typeof msg === "string") {
 			parts.push({ text: msg });
-		} else if (msg instanceof ArrayBuffer || msg instanceof Uint8Array) {
-			totalBytes += Buffer.from(msg).byteLength;
-			const mimeType = await getFileType(msg);
+		} else if (msg instanceof ArrayBuffer || msg instanceof Uint8Array || isFileUpload(msg)) {
+			const is_file_upload = isFileUpload(msg);
+			const buffer = is_file_upload ? msg.buffer : msg;
+			const filePath = is_file_upload ? msg.filePath : undefined;
+			totalBytes += Buffer.from(buffer).byteLength;
+			const mimeType = await getFileType(buffer, filePath);
 			if (!mimeType.startsWith("video")) {
 				parts.push({
 					inline_data: {
-						mime_type: await getFileType(msg),
-						data: Buffer.from(msg).toString("base64"),
+						mime_type: mimeType,
+						data: Buffer.from(buffer).toString("base64"),
 					},
 				});
 			} else {
 				const fileURI = await uploadFile({
-					file: msg,
+					file: buffer,
 					mimeType: mimeType,
 					gemini: gemini,
 				});

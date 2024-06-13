@@ -1,7 +1,8 @@
 import { FileTypeResult, fileTypeFromBuffer } from "file-type";
 import type { GeminiResponse, Message } from "./types";
+import { getType } from "mime-lite";
 
-export const getFileType = async (buffer: Uint8Array | ArrayBuffer) => {
+export const getFileType = async (buffer: Uint8Array | ArrayBuffer, filePath: string | undefined = undefined) => {
 	const fileType: FileTypeResult | undefined = await fileTypeFromBuffer(buffer);
 
 	const validMediaFormats = [
@@ -26,15 +27,33 @@ export const getFileType = async (buffer: Uint8Array | ArrayBuffer) => {
 		"video/webm",
 		"video/wmv",
 		"video/3gpp",
+		"text/plain",
+		"text/html",
+		"text/css",
+		"text/javascript",
+		"application/x-javascript",
+		"text/x-typescript",
+		"application/x-typescript",
+		"text/csv",
+		"text/markdown",
+		"text/x-python",
+		"application/x-python-code",
+		"application/json",
+		"text/xml",
+		"application/rtf",
+		"text/rtf",
 	];
 
 	const formatMap = {
 		"audio/mpeg": "audio/mp3",
 	};
 
-	const format = formatMap[fileType?.mime as string] || fileType?.mime;
-
-	if (format === undefined || !validMediaFormats.includes(format))
+	let format = formatMap[fileType?.mime as string] || fileType?.mime;
+	if (!format && filePath) {
+		// If the format cannot be detected, we fall back to using the file extension instead.
+		format = getType(filePath);
+	}
+	if (!validMediaFormats.includes(format))
 		throw new Error(
 			"Please provide a valid file format that is accepted by Gemini. Learn more about valid formats here: https://ai.google.dev/gemini-api/docs/prompting_with_media?lang=node#supported_file_formats",
 		);
