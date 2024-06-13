@@ -49,7 +49,7 @@ export const getFileType = async (buffer: Uint8Array | ArrayBuffer, filePath: st
 	};
 
 	let format = formatMap[fileType?.mime as string] || fileType?.mime;
-	if (!format && filePath) {
+	if (filePath && (!format || !validMediaFormats.includes(format))) {
 		// If the format cannot be detected, we fall back to using the file extension instead.
 		format = getType(filePath);
 	}
