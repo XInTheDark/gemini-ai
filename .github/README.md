@@ -1,17 +1,17 @@
 <img alt="Gemini AI Banner" src="../assets/banner.png">
 <p align="center">
-  <a aria-label="NPM Version" href="https://www.npmjs.com/package/gemini-ai">
-    <img alt="" src="https://img.shields.io/npm/v/gemini-ai.svg?label=NPM&logo=npm&style=for-the-badge&color=0470FF&logoColor=white">
+  <a aria-label="NPM Version" href="https://www.npmjs.com/package/gemini-g4f">
+    <img alt="" src="https://img.shields.io/npm/v/gemini-g4f.svg?label=NPM&logo=npm&style=for-the-badge&color=0470FF&logoColor=white">
   </a>
-  <a aria-label="NPM Download Count" href="https://www.npmjs.com/package/gemini-ai">
-    <img alt="" src="https://img.shields.io/npm/dt/gemini-ai?label=Downloads&style=for-the-badge&color=27B2FF">
+  <a aria-label="NPM Download Count" href="https://www.npmjs.com/package/gemini-g4f">
+    <img alt="" src="https://img.shields.io/npm/dt/gemini-g4f?label=Downloads&style=for-the-badge&color=27B2FF">
   </a>
-  <a aria-label="Gemini AI Size" href="https://www.npmjs.com/package/gemini-ai">
-    <img alt="" src="https://img.shields.io/bundlephobia/minzip/gemini-ai?style=for-the-badge&color=B3CAFF">
+  <a aria-label="Gemini AI Size" href="https://www.npmjs.com/package/gemini-g4f">
+    <img alt="" src="https://img.shields.io/bundlephobia/minzip/gemini-g4f?style=for-the-badge&color=B3CAFF">
   </a>
 </p>
 <p align="center">
-  <a href="#documentation">Docs</a> | <a href="https://github.com/evanzhoudev/gemini-ai">GitHub</a> | <a href="#faq">FAQ</a>
+  <a href="#documentation">Docs</a> | <a href="https://github.com/XInTheDark/gemini-ai">GitHub</a> | <a href="#faq">FAQ</a>
 </p>
 
 ## Features
@@ -57,7 +57,7 @@ run();
 Gemini AI (ES6 Modules):
 
 ```javascript
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY);
 console.log(await gemini.ask("Hi!"));
@@ -95,7 +95,7 @@ There's also more...
 Install with the following command, or the command for your favorite package manager.
 
 ```bash
-npm install gemini-ai
+npm install gemini-g4f
 ```
 
 Gemini AI is a pure ES6 Module, which means you will have to use it with `import`. It is recommended that your project is also ES6, but [look in the FAQ]() for a CJS (`require()`) workaround.
@@ -114,7 +114,7 @@ Gemini AI is a pure ES6 Module, which means you will have to use it with `import
 Make a text request:
 
 ```javascript
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY);
 
@@ -124,7 +124,7 @@ console.log(await gemini.ask("Hi!"));
 Make a streaming text request:
 
 ```javascript
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY);
 
@@ -136,7 +136,7 @@ gemini.ask("Hi!", {
 Chat with Gemini:
 
 ```javascript
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY);
 const chat = gemini.createChat();
@@ -153,7 +153,7 @@ console.log(await chat.ask("What's the last thing I said?"));
 
 ```javascript
 import fs from "fs";
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY);
 
@@ -169,7 +169,7 @@ console.log(
 <br>
 
 ```javascript
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY);
 
@@ -204,7 +204,7 @@ console.log(await gemini.embed("Hi!"));
 Here's a quick demo:
 
 ```javascript
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY);
 
@@ -258,7 +258,7 @@ Initialize it with Gemini AI:
 
 ```javascript
 import { ProxyAgent } from "undici";
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 let gemini = new Gemini(API_KEY, {
 	dispatcher: new ProxyAgent(PROXY_URL),
@@ -278,7 +278,7 @@ To start any project, include the following lines:
 
 ```javascript
 // Import Gemini AI
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 // Initialize your key
 const gemini = new Gemini(API_KEY);
@@ -359,6 +359,9 @@ await gemini.ask([
 > [!NOTE]
 > You can also place buffers in the `data` field in the config (this is the v1 method, but it still works). These buffers will be placed, in order, directly after the content in the main message.
 
+> [!NOTE]
+> This method can NOT be used in a Chat. Use the `messages` field  instead (see [Gemini.createChat()](#geminicreatechat)).
+
 ##### Message Form:
 
 This is the raw message format. It is not meant to be used directly, but can be useful when needing raw control over file uploads, and it is also used internally by the `Chat` class.
@@ -388,7 +391,7 @@ Please check `src/types.ts` for more information about what is accepted in the `
 Example Usage:
 
 ```javascript
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY);
 
@@ -494,7 +497,7 @@ Config available:
 Example Usage:
 
 ```javascript
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY);
 
@@ -513,7 +516,7 @@ Config available:
 Example Usage:
 
 ```javascript
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY);
 
@@ -542,7 +545,7 @@ Example Usage:
 ```javascript
 // Simple example:
 
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY);
 
@@ -557,7 +560,7 @@ console.log(await chat.ask("What's the last thing I said?"));
 ```javascript
 // "Continuing" a conversation:
 
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY);
 
@@ -573,6 +576,91 @@ const newChat = gemini.createChat({
 
 console.log(await newChat.ask("What's the last thing I said?"));
 ```
+
+### `Chat.messages`
+A `Message` type in the API is defined as:
+```javascript
+type Message = { parts: Part[]; role: Role };
+```
+
+... where `role` is either "user", "model", or "system". You need not worry about Part, as it is an internal type, and
+you can convert a message to parts using the `messageToParts()` function (see below).
+
+### Uploading files in a message (Advanced)
+To allow for easy upload of files, the API provides a `FileUpload` type, defined as:
+```javascript
+type FileUpload = { buffer: ArrayBuffer, filePath: string };
+````
+
+Next, the API provides a `messageToParts()` function:
+```javascript
+export const messageToParts = async (
+	messages: (Uint8Array | ArrayBuffer | FileUpload | string)[], // The messages to convert
+	gemini: Gemini, // The Gemini object
+): Promise<Part[]> => ...
+```
+It takes in an array of `string | Buffer | FileUpload`, as well as a `Gemini` object, and returns an array of `Part` objects. 
+
+Lastly, you can then simply pass this `parts` array to initialize a `Message` object.
+
+Example Usage:
+
+```javascript
+// Uploading files to a conversation:
+
+import Gemini from "gemini-g4f";
+
+const gemini = new Gemini(API_KEY);
+
+// Let's assume this is how the messages are stored in your application; alternate structures are of course possible
+const messages = [
+    { role: "user", content: "Hi!" }, // message 1
+    { role: "model", content: "Hello! How can I help you today?"}, // response to message 1
+    { role: "user", content: [
+        "Between these two cookies, which one appears to be home-made, and which one looks store-bought?",
+	    fs.readFileSync("./cookie1.png"),
+	    fs.readFileSync("./cookie2.png"),
+      ] 
+    }, // message 2
+    { role: "model", content: "The first cookie looks home-made, and the second looks store-bought."}, // response to message 2
+];
+
+const chat_messages = []; // array of Message objects that we will pass to the Chat
+
+for (const message of messages) {
+    const parts = await messageToParts(message.content, gemini);
+    const chat_message = { parts: parts, role: message.role };
+    chat_messages.push(chat_message);
+}
+
+// Now, we can start a conversation
+const chat = gemini.createChat({ messages: chat_messages });
+
+await chat.ask("Why do you think the first cookie looks home-made?");
+```
+
+```javascript
+// Uploading files to a conversation, with a FileUpload object:
+import Gemini from "gemini-g4f";
+
+const gemini = new Gemini(API_KEY);
+
+// In this example, we structure our messages differently, to utilize FileUpload objects
+const messages = [
+    { role: "user", content: "Hi!" }, // message 1
+    { role: "model", content: "Hello! How can I help you today?"}, // response to message 1
+    { role: "user", content: [
+        "Between these two cookies, which one appears to be home-made, and which one looks store-bought?",
+        { buffer: fs.readFileSync("./cookie1.png"), filePath: "./cookie1.png" }, // FileUpload object
+        { buffer: fs.readFileSync("./cookie2.png"), filePath: "./cookie2.png" }, // FileUpload object
+      ] 
+    }, // message 2
+    { role: "model", content: "The first cookie looks home-made, and the second looks store-bought."}, // response to message 2
+];
+
+/// remaining code is the same as the previous example
+```
+
 
 ## FAQ
 
@@ -638,7 +726,7 @@ By default, Gemini AI uses `gemini-1.5-flash-latest`, Google's leading efficienc
 But, of course, should you need to change the model, it's as easy as passing it into the configuration of your request. For example:
 
 ```javascript
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY);
 
@@ -658,7 +746,7 @@ When initializing `Gemini`, you can pass in an API version. This feature mainly 
 Here's how you can change it to, say, v1:
 
 ```javascript
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY, {
 	apiVersion: "v1",
@@ -672,7 +760,7 @@ const gemini = new Gemini(API_KEY, {
 Everything is optimized so it works for both browsers and Node.js—Files are passed as Buffers, so you decide how to get them, and adding a fetch polyfill is as easy as:
 
 ```javascript
-import Gemini from "gemini-ai";
+import Gemini from "gemini-g4f";
 import fetch from "node-fetch";
 
 const gemini = new Gemini(API_KEY, {
@@ -689,10 +777,10 @@ Nearly all `fetch` polyfills should work as of Gemini AI v2.2, as streaming is n
 Gemini AI is a ESM (`import`) only module. It is recommended that you use ESM in your projects too. However, if you must use CJS, you can use dynamic imports. Here's an example:
 
 ```javascript
-import("gemini-ai").then((Gemini) => {
+import("gemini-g4f").then((Gemini) => {
 	let gemini = new Gemini(API_KEY);
 });
 ```
 
 <h2 align="center" id="contributors">Contributors</h2>
-<p align="center">A special shoutout to developers of and contributors to the <a href="https://github.com/EvanZhouDev/bard-ai"><code>bard-ai</code></a> and <a href="https://github.com/EvanZhouDev/palm-api"><code>palm-api</code></a> libraries. Gemini AI's interface is heavily based on what we have developed on these two projects.</p>
+<p align="center">A special shoutout to developers of and contributors to the <a href="https://github.com/XInTheDark/bard-ai"><code>bard-ai</code></a> and <a href="https://github.com/XInTheDark/palm-api"><code>palm-api</code></a> libraries. Gemini AI's interface is heavily based on what we have developed on these two projects.</p>
