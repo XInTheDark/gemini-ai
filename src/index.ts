@@ -496,7 +496,6 @@ class Chat {
 		options: Partial<ChatAskOptions<F>> = {},
 	): Promise<CommandResponseMap<F>[Command.Generate]> {
 		const parsedConfig: CommandOptionMap<F>[Command.Generate] = {
-			...this.options,
 			...{
 				data: [],
 				format: Gemini.TEXT as F,
@@ -509,6 +508,7 @@ class Chat {
 				systemInstruction: "",
 				jsonSchema: undefined,
 			},
+			...this.options,
 			...options,
 		};
 
