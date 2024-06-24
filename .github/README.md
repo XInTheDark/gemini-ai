@@ -686,10 +686,10 @@ Nearly all `fetch` polyfills should work as of Gemini AI v2.2, as streaming is n
 
 > I got `Error [ERR_REQUIRE_ESM]: require() of ES Module`, what can I do?
 
-Gemini AI is a ESM (`import`) only module. It is recommended that you use ESM in your projects too. However, if you must use CJS, you can use dynamic imports. Here's an example:
+Gemini AI is a ESM (`import`) only module. It is recommended that you use ESM in your projects too. However, if you must use CommonJS, you can use dynamic imports. Here's an example:
 
 ```javascript
-import("gemini-ai").then((Gemini) => {
+import("gemini-ai").then(async ({ default: Gemini }) => {
 	let gemini = new Gemini(API_KEY);
 });
 ```
