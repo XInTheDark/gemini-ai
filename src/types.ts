@@ -100,6 +100,7 @@ type GenerateContentBody = {
 		responseMimeType?: string;
 		responseSchema?: Schema;
 	};
+	tools?: {},
 	safetySettings: { category: HarmCategory; threshold: SafetyThreshold }[];
 	systemInstruction?: Message;
 };
@@ -160,6 +161,10 @@ export type GeminiOptions = {
 	fetch?: typeof fetch;
 	apiVersion?: string;
 	dispatcher?: ProxyAgent;
+	features?: {
+		/** enable Code Execution tool */
+		codeExecution?: boolean;
+	};
 };
 
 /**

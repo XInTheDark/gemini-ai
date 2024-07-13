@@ -166,6 +166,7 @@ class Gemini {
 	readonly key: string;
 	readonly apiVersion: string;
 	readonly fetch: typeof fetch;
+	readonly tools: any;
 
 	static TEXT = "text" as const;
 	static JSON = "json" as const;
@@ -183,6 +184,9 @@ class Gemini {
 			...{
 				apiVersion: "v1beta",
 				fetch: typeof fetch === "function" ? fetch : options.fetch,
+				features: {
+					codeExecution: false,
+				},
 			},
 			...options,
 		};
@@ -190,6 +194,7 @@ class Gemini {
 		this.key = key;
 		this.fetch = parsedOptions.fetch;
 		this.apiVersion = parsedOptions.apiVersion;
+		this.featuresToTools(parsedOptions.features);
 	}
 
 	async query<C extends Command>(
@@ -436,6 +441,7 @@ class Gemini {
 						: undefined,
 			},
 			safetySettings,
+			tools: this.tools,
 		};
 
 		if (parsedOptions.systemInstruction !== "") {
@@ -465,6 +471,14 @@ class Gemini {
 
 	createChat(options: Partial<ChatOptions> = {}) {
 		return new Chat(this, options);
+	}
+
+	featuresToTools = (features: any) => {
+		for (const [key, value] of Object.entries(features)) {
+			if (value) {
+				this.tools[key] = {};
+			}
+		}
 	}
 }
 
