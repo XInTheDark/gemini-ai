@@ -476,10 +476,8 @@ class Chat {
 			...{
 				messages: [],
 				temperature: 1,
-				topP: 0.94,
-				topK: 1,
 				model: "gemini-1.5-flash-latest",
-				maxOutputTokens: 2048,
+				maxOutputTokens: 8192,
 				systemInstruction: "",
 			},
 			...options,
