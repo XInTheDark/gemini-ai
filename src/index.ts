@@ -342,10 +342,8 @@ class Gemini {
 			...{
 				model: "gemini-1.5-flash-latest",
 				temperature: 1,
-				topP: 0.94,
-				topK: 32,
 				format: Gemini.TEXT as F,
-				maxOutputTokens: 2048,
+				maxOutputTokens: 8192,
 				data: [],
 				messages: [],
 				safetySettings: {

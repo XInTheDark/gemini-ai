@@ -167,9 +167,9 @@ export type GeminiOptions = {
  */
 export type CommandOptionMap<F extends Format = TextFormat> = {
 	[Command.Generate]: {
-		temperature: number;
-		topP: number;
-		topK: number;
+		temperature?: number;
+		topP?: number;
+		topK?: number;
 		format: F;
 		maxOutputTokens: number;
 		model: string;
