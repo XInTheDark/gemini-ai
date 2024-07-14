@@ -198,32 +198,40 @@ class Gemini {
 		body: QueryBodyMap[C],
 		stop: AbortSignal = null,
 	): Promise<Response> {
-		const opts = {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(body),
-			signal: stop,
-		};
+		let iter_models = model === "auto" ? ["gemini-1.5-pro-latest", "gemini-1.5-flash-latest"] : [model];
 
-		const url = new URL(
-			`https://generativelanguage.googleapis.com/${this.apiVersion}/models/${model}:${command}`,
-		);
+		for (let model_idx = 0; model_idx < iter_models.length; model_idx++) {
+			const model = iter_models[model_idx];
 
-		url.searchParams.append("key", this.key);
-		if (command === Command.StreamGenerate)
-			url.searchParams.append("alt", "sse");
+			const opts = {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(body),
+				signal: stop,
+			};
 
-		const response = await this.fetch(url.toString(), opts);
-
-		if (!response.ok) {
-			throw new Error(
-				`There was an error when querying Gemini.\n${await response.text()}`,
+			const url = new URL(
+				`https://generativelanguage.googleapis.com/${this.apiVersion}/models/${model}:${command}`,
 			);
-		}
 
-		return response;
+			url.searchParams.append("key", this.key);
+			if (command === Command.StreamGenerate)
+				url.searchParams.append("alt", "sse");
+
+			const response = await this.fetch(url.toString(), opts);
+
+			if (!response.ok) {
+				if (model_idx === iter_models.length - 1)
+					throw new Error(
+						`There was an error when querying Gemini.\n${await response.text()}`,
+					);
+				continue;
+			}
+
+			return response;
+		}
 	}
 
 	async count(
