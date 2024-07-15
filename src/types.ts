@@ -43,6 +43,10 @@ type InlineFilePart = { inline_data: { mime_type: FileType; data: string } };
 
 type TextPart = { text: string };
 
+type FunctionCallPart = { text: string, functionCall: object };
+
+export type ResponsePart = TextPart | FunctionCallPart;
+
 export type Part = TextPart | RemoteFilePart | InlineFilePart;
 
 type Role = "user" | "model" | "system";
@@ -62,7 +66,7 @@ export type PromptFeedback = {
 };
 
 export type Candidate = {
-	content: { parts: TextPart[]; role: Role };
+	content: { parts: ResponsePart[]; role: Role };
 	finishReason: string;
 	index: number;
 	safetyRatings: SafetyRating[];
@@ -161,7 +165,7 @@ export type GeminiOptions = {
 	fetch?: typeof fetch;
 	apiVersion?: string;
 	dispatcher?: ProxyAgent;
-	tools?: [];
+	tools?: [{}];
 };
 
 /**

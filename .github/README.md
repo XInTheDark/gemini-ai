@@ -661,6 +661,43 @@ const messages = [
 /// remaining code is the same as the previous example
 ```
 
+## Function calling
+Gemini-g4f now supports function calling!
+During initialisation of the Gemini object, simply pass a `tools` object in the following format:
+```javascript
+const gemini = new Gemini(API_KEY, {
+    tools: [
+        // 1. The function declaration
+        {
+        "name": "find_movies",
+        "description": "find movie titles currently playing in theaters based on any description, genre, title words, etc.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city and state, e.g. San Francisco, CA or a zip code e.g. 95616"
+            },
+            "description": {
+              "type": "string",
+              "description": "Any kind of description including category or genre, title words, attributes, etc."
+            }
+          },
+          "required": [
+            "description"
+          ]
+        },
+        "function": 
+          // 2. The function to be called (async is preferred)
+          async (location, description) => {
+              // do stuff
+              return `Finding movies in ${location} based on the description: ${description}`;
+          }
+      },
+      // more functions can be added here
+    ]
+});
+```
 
 ## FAQ
 
@@ -781,6 +818,3 @@ import("gemini-g4f").then(async ({ default: Gemini }) => {
 	let gemini = new Gemini(API_KEY);
 });
 ```
-
-<h2 align="center" id="contributors">Contributors</h2>
-<p align="center">A special shoutout to developers of and contributors to the <a href="https://github.com/XInTheDark/bard-ai"><code>bard-ai</code></a> and <a href="https://github.com/XInTheDark/palm-api"><code>palm-api</code></a> libraries. Gemini AI's interface is heavily based on what we have developed on these two projects.</p>

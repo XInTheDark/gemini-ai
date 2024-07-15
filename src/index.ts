@@ -166,7 +166,8 @@ class Gemini {
 	readonly key: string;
 	readonly apiVersion: string;
 	readonly fetch: typeof fetch;
-	readonly tools: [];
+	readonly tools?: {};
+	readonly toolsApi?: any[];
 
 	static TEXT = "text" as const;
 	static JSON = "json" as const;
@@ -191,7 +192,8 @@ class Gemini {
 		this.key = key;
 		this.fetch = parsedOptions.fetch;
 		this.apiVersion = parsedOptions.apiVersion;
-		this.tools = parsedOptions.tools;
+		this.tools = this.toolsToInternal(parsedOptions.tools);
+		this.toolsApi = this.toolsToApi(parsedOptions.tools);
 	}
 
 	async query<C extends Command>(
@@ -295,7 +297,7 @@ class Gemini {
 		return output.embedding.values;
 	}
 
-	private getTextObject = (response: GeminiResponse) =>
+	private getResponsePart = (response: GeminiResponse) =>
 		response.candidates[0].content.parts[0];
 
 	private switchFormat =
@@ -313,7 +315,7 @@ class Gemini {
 
 			switch (format) {
 				case Gemini.TEXT:
-					return this.getTextObject(response).text as FormatType<F>;
+					return this.getResponsePart(response).text as FormatType<F>;
 				case Gemini.JSON:
 					return response as FormatType<F>;
 			}
@@ -339,7 +341,7 @@ class Gemini {
 			cb(formatter(value));
 		});
 
-		this.getTextObject(res).text = text;
+		this.getResponsePart(res).text = text;
 
 		return formatter(res);
 	};
@@ -444,7 +446,7 @@ class Gemini {
 						: undefined,
 			},
 			safetySettings,
-			tools: this.tools,
+			tools: this.toolsApi,
 		};
 
 		if (parsedOptions.systemInstruction !== "") {
@@ -474,6 +476,27 @@ class Gemini {
 
 	createChat(options: Partial<ChatOptions> = {}) {
 		return new Chat(this, options);
+	}
+
+	toolsToApi = (tools?: object[]) => {
+		if (tools === undefined || tools.length === 0) return undefined;
+		let api = [];
+		for (let tool of tools) {
+			let toolCopy = { ...tool };
+			delete toolCopy["function"];
+			api.push(toolCopy);
+		}
+		return api;
+	}
+
+	toolsToInternal = (tools?: object[]) => {
+		if (tools === undefined || tools.length === 0) return undefined;
+		let internal = {};
+		for (let tool of tools) {
+			let name = tool["name"];
+			internal[name] = tool["function"];
+		}
+		return internal;
 	}
 }
 
