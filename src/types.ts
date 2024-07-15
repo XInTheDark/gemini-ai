@@ -172,9 +172,9 @@ export type GeminiOptions = {
  */
 export type CommandOptionMap<F extends Format = TextFormat> = {
 	[Command.Generate]: {
-		temperature: number;
-		topP: number;
-		topK: number;
+		temperature?: number;
+		topP?: number;
+		topK?: number;
 		format: F;
 		maxOutputTokens: number;
 		model: string;
@@ -213,9 +213,9 @@ export type FormatType<T> = T extends JSONFormat ? GeminiResponse : string;
 
 export type ChatOptions = {
 	messages: [string, string][] | Message[];
-	temperature: number;
-	topP: number;
-	topK: number;
+	temperature?: number;
+	topP?: number;
+	topK?: number;
 	model: string;
 	maxOutputTokens: number;
 	systemInstruction: string;
