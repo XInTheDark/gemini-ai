@@ -46,7 +46,7 @@ const formatMap = {
 	"video/quicktime": "video/mov",
 };
 
-export const getFileType = async (buffer: Uint8Array | ArrayBuffer, filePath: string | undefined = undefined) => {
+export const getFileType = async (buffer: Uint8Array | ArrayBuffer, filePath: string | undefined = undefined, strict: boolean = false) => {
 	const fileType: FileTypeResult | undefined = await fileTypeFromBuffer(buffer);
 
 	let format = formatMap[fileType?.mime as string] || fileType?.mime;
@@ -58,10 +58,16 @@ export const getFileType = async (buffer: Uint8Array | ArrayBuffer, filePath: st
 		format = formatMap[format] || format;
 		valid = validMediaFormats.includes(format);
 	}
-	if (!valid)
-		throw new Error(
-			"Please provide a valid file format that is accepted by Gemini. Learn more about valid formats here: https://ai.google.dev/gemini-api/docs/prompting_with_media?lang=node#supported_file_formats",
-		);
+	if (!valid) {
+		if (strict) {
+			throw new Error(
+				"Please provide a valid file format that is accepted by Gemini. Learn more about valid formats here: https://ai.google.dev/gemini-api/docs/prompting_with_media?lang=node#supported_file_formats",
+			);
+		} else {
+			// if the format is not valid, we default to text/plain
+			format = "text/plain";
+		}
+	}
 
 	return format;
 };
