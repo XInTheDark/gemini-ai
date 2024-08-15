@@ -113,13 +113,19 @@ type GenerateContentQueryOutput = {
 };
 
 /**
+ * The model used for an API call
+ * If this is an array, the API will iterate through each model until one works
+ */
+export type Model = string | string[];
+
+/**
  * The body used for the API call for each command
  */
 export type QueryBodyMap = {
 	[Command.StreamGenerate]: GenerateContentBody;
 	[Command.Generate]: GenerateContentBody;
 	[Command.Count]: { contents: Message[] };
-	[Command.Embed]: { model: string; content: Message };
+	[Command.Embed]: { model: Model; content: Message };
 };
 
 /**
@@ -172,7 +178,7 @@ export type CommandOptionMap<F extends Format = TextFormat> = {
 		topK?: number;
 		format: F;
 		maxOutputTokens: number;
-		model: string;
+		model: Model;
 		data: Buffer[];
 		systemInstruction: string;
 		safetySettings: {
@@ -186,10 +192,10 @@ export type CommandOptionMap<F extends Format = TextFormat> = {
 		jsonSchema: boolean | Schema;
 	};
 	[Command.Embed]: {
-		model: string;
+		model: Model;
 	};
 	[Command.Count]: {
-		model: string;
+		model: Model;
 	};
 };
 
@@ -211,7 +217,7 @@ export type ChatOptions = {
 	temperature?: number;
 	topP?: number;
 	topK?: number;
-	model: string;
+	model: Model;
 	maxOutputTokens: number;
 	systemInstruction: string;
 };

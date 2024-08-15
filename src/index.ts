@@ -1,4 +1,4 @@
-import {Command, HarmCategory, SafetyThreshold, SchemaType, isFileUpload } from "./types";
+import {Command, HarmCategory, SafetyThreshold, SchemaType, isFileUpload, Model} from "./types";
 
 import type {
 	ChatAskOptions,
@@ -193,12 +193,12 @@ class Gemini {
 	}
 
 	async query<C extends Command>(
-		model: string,
+		model: Model,
 		command: C,
 		body: QueryBodyMap[C],
 		stop: AbortSignal = null,
 	): Promise<Response> {
-		let iter_models = model === "auto" ? ["gemini-1.5-pro-latest", "gemini-1.5-flash-latest"] : [model];
+		let iter_models = model instanceof Array ? model : model === "auto" ? ["gemini-1.5-pro-latest", "gemini-1.5-flash-latest"] : [model];
 
 		for (let model_idx = 0; model_idx < iter_models.length; model_idx++) {
 			const model = iter_models[model_idx];
