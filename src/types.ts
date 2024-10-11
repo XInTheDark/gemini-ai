@@ -35,7 +35,8 @@ type FileType =
 	| "application/json"
 	| "text/xml"
 	| "application/rtf"
-	| "text/rtf";
+	| "text/rtf"
+	| "application/pdf";
 
 type RemoteFilePart = { fileData: { mime_type: FileType; fileUri: string } };
 

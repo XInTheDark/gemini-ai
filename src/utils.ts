@@ -2,7 +2,7 @@ import { FileTypeResult, fileTypeFromBuffer } from "file-type";
 import type { GeminiResponse, Message } from "./types";
 import { getType } from "mime-lite";
 
-const validMediaFormats = [
+const supportedFileFormats = [
 	"image/png",
 	"image/jpeg",
 	"image/webp",
@@ -39,6 +39,7 @@ const validMediaFormats = [
 	"text/xml",
 	"application/rtf",
 	"text/rtf",
+	"application/pdf",
 ];
 
 const formatMap = {
@@ -50,13 +51,12 @@ export const getFileType = async (buffer: Uint8Array | ArrayBuffer, filePath: st
 	const fileType: FileTypeResult | undefined = await fileTypeFromBuffer(buffer);
 
 	let format = formatMap[fileType?.mime as string] || fileType?.mime;
-	let valid = validMediaFormats.includes(format);
+	let valid = supportedFileFormats.includes(format);
 
 	if (!valid && filePath) {
 		// If the format cannot be detected, we fall back to using the file extension instead.
 		format = getType(filePath);
 		format = formatMap[format] || format;
-		valid = validMediaFormats.includes(format);
 	}
 	if (!valid) {
 		if (strict) {
