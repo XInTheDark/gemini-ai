@@ -1,6 +1,6 @@
 import { FileTypeResult, fileTypeFromBuffer } from "file-type";
 import type { GeminiResponse, Message } from "./types";
-import { getType } from "mime-lite";
+import mime from "mime-lite";
 
 const supportedFileFormats = [
 	"image/png",
@@ -55,7 +55,7 @@ export const getFileType = async (buffer: Uint8Array | ArrayBuffer, filePath: st
 
 	if (!valid && filePath) {
 		// If the format cannot be detected, we fall back to using the file extension instead.
-		format = getType(filePath);
+		format = mime.getType(filePath);
 		format = formatMap[format] || format;
 	}
 	if (!valid) {
