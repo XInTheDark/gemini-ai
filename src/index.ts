@@ -1,4 +1,5 @@
-import { Command, HarmCategory, SafetyThreshold, SchemaType, isFileUpload, Model, OpenAIMessage } from "./types";
+import { Command, SchemaType, isFileUpload, Model, OpenAIMessage } from "./types";
+import { HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 
 import type {
   ChatAskOptions,
@@ -164,7 +165,6 @@ class Gemini {
 
   static TEXT = "text" as const;
   static JSON = "json" as const;
-  static SafetyThreshold = SafetyThreshold;
   static SchemaType = SchemaType;
 
   constructor(key: string, options: Partial<GeminiOptions> = {}) {
@@ -209,38 +209,23 @@ class Gemini {
         maxOutputTokens: 8192,
         data: [],
         messages: [],
-        safetySettings: {
-          hate: Gemini.SafetyThreshold.BLOCK_NONE,
-          sexual: Gemini.SafetyThreshold.BLOCK_NONE,
-          harassment: Gemini.SafetyThreshold.BLOCK_NONE,
-          dangerous: Gemini.SafetyThreshold.BLOCK_NONE,
-        },
+        safetySettings: undefined,
         systemInstruction: "",
         jsonSchema: undefined,
       },
       ...options,
     };
 
-    const safetySettings = [
-      {
-        category: HarmCategory.HateSpeech,
-        threshold: parsedOptions.safetySettings.hate,
-      },
-      {
-        category: HarmCategory.SexuallyExplicit,
-        threshold: parsedOptions.safetySettings.sexual,
-      },
-      {
-        category: HarmCategory.Harassment,
-        threshold: parsedOptions.safetySettings.harassment,
-      },
-      {
-        category: HarmCategory.DangerousContent,
-        threshold: parsedOptions.safetySettings.dangerous,
-      },
-    ];
+    const generationConfig = {
+      temperature: parsedOptions.temperature,
+      maxOutputTokens: parsedOptions.maxOutputTokens,
+      topP: parsedOptions.topP,
+      topK: parsedOptions.topK,
+      // responseMimeType: parsedOptions.jsonSchema ? "application/json" : undefined,
+      // responseSchema: parsedOptions.jsonSchema,
+    };
 
-    const command = parsedOptions.stream ? Command.StreamGenerate : Command.Generate;
+    const safetySettings = parsedOptions.safetySettings;
 
     const contents = [
       ...parsedOptions.messages.flatMap((msg: [string, string] | Message) => {
@@ -265,25 +250,13 @@ class Gemini {
       };
     }
 
-    const body: QueryBodyMap[typeof command] = {
-      contents,
-      generationConfig: {
-        temperature: parsedOptions.temperature,
-        maxOutputTokens: parsedOptions.maxOutputTokens,
-        topP: parsedOptions.topP,
-        topK: parsedOptions.topK,
-        responseMimeType: parsedOptions.jsonSchema ? "application/json" : undefined,
-        responseSchema: parsedOptions.jsonSchema,
-      },
-      safetySettings,
-    };
-
-    if (parsedOptions.systemInstruction !== "") {
-      body.systemInstruction = {
-        parts: [{ text: parsedOptions.systemInstruction }],
-        role: "system",
-      };
-    }
+    let systemInstruction =
+      parsedOptions.systemInstruction !== ""
+        ? {
+            parts: [{ text: parsedOptions.systemInstruction }],
+            role: "system",
+          }
+        : undefined;
 
     const googleGemini = this.googleGemini;
     const model = parsedOptions.model;
@@ -301,6 +274,9 @@ class Gemini {
       const geminiChat = gemini.startChat({
         // @ts-ignore
         history: contents,
+        generationConfig: generationConfig,
+        safetySettings: safetySettings,
+        systemInstruction: systemInstruction,
       });
 
       let response;
@@ -373,12 +349,7 @@ class Chat {
       ...{
         data: [],
         format: Gemini.TEXT as F,
-        safetySettings: {
-          hate: Gemini.SafetyThreshold.BLOCK_SOME,
-          sexual: Gemini.SafetyThreshold.BLOCK_SOME,
-          harassment: Gemini.SafetyThreshold.BLOCK_SOME,
-          dangerous: Gemini.SafetyThreshold.BLOCK_SOME,
-        },
+        safetySettings: undefined,
         systemInstruction: "",
         jsonSchema: undefined,
       },
@@ -431,3 +402,4 @@ class Chat {
 export default Gemini;
 
 export type { Format, Message, Part, CommandResponseMap, CommandOptionMap, GeminiOptions, ChatOptions, ChatAskOptions };
+export type { HarmCategory, HarmBlockThreshold };
