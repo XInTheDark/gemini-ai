@@ -47,7 +47,7 @@ const formatMap = {
 	"video/quicktime": "video/mov",
 };
 
-export const getFileType = async (buffer: Uint8Array | ArrayBuffer, filePath: string | undefined = undefined, strict: boolean = false) => {
+export const getFileType = async (buffer: Uint8Array | ArrayBuffer, filePath: string | undefined = undefined, {strict = false} = {}) => {
 	const fileType: FileTypeResult | undefined = await fileTypeFromBuffer(buffer);
 
 	let format = formatMap[fileType?.mime as string] || fileType?.mime;
