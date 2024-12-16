@@ -41,14 +41,14 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 async function run() {
-	const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
 
-	const prompt = "Hi!";
+  const prompt = "Hi!";
 
-	const result = await model.generateContent(prompt);
-	const response = await result.response;
-	const text = response.text();
-	console.log(text);
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  const text = response.text();
+  console.log(text);
 }
 
 run();
@@ -127,7 +127,7 @@ import Gemini from "gemini-g4f";
 const gemini = new Gemini(API_KEY);
 
 gemini.ask("Hi!", {
-	stream: console.log,
+  stream: console.log,
 });
 ```
 
@@ -155,9 +155,7 @@ import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY);
 
-console.log(
-	await gemini.ask(["What do you see?", fs.readFileSync("./cat.png")])
-);
+console.log(await gemini.ask(["What do you see?", fs.readFileSync("./cat.png")]));
 ```
 
 </details>
@@ -172,10 +170,10 @@ import Gemini from "gemini-g4f";
 const gemini = new Gemini(API_KEY);
 
 console.log(
-	await gemini.ask("Hello!", {
-		temperature: 0.5,
-		topP: 1,
-	})
+  await gemini.ask("Hello!", {
+    temperature: 0.5,
+    topP: 1,
+  }),
 );
 ```
 
@@ -207,7 +205,7 @@ import Gemini from "gemini-g4f";
 const gemini = new Gemini(API_KEY);
 
 gemini.ask("Write an essay", {
-	stream: (x) => process.stdout.write(x),
+  stream: (x) => process.stdout.write(x),
 });
 ```
 
@@ -259,7 +257,7 @@ import { ProxyAgent } from "undici";
 import Gemini from "gemini-g4f";
 
 let gemini = new Gemini(API_KEY, {
-	dispatcher: new ProxyAgent(PROXY_URL),
+  dispatcher: new ProxyAgent(PROXY_URL),
 });
 ```
 
@@ -290,9 +288,9 @@ All model calling methods have a main parameter first (typically the text as inp
 
 ```javascript
 await gemini.ask("Hi!", {
-	// Config
-	temperature: 0.5,
-	topP: 1,
+  // Config
+  temperature: 0.5,
+  topP: 1,
 });
 ```
 
@@ -305,7 +303,7 @@ You have the option to set format to `Gemini.JSON`
 
 ```javascript
 await gemini.ask("Hi!", {
-	format: Gemini.JSON,
+  format: Gemini.JSON,
 });
 ```
 
@@ -347,10 +345,10 @@ _Example:_
 import fs from "fs";
 
 await gemini.ask([
-	"Between these two cookies, which one appears to be home-made, and which one looks store-bought? Cookie 1:",
-	fs.readFileSync("./cookie1.png"),
-	"Cookie 2",
-	fs.readFileSync("./cookie2.png"),
+  "Between these two cookies, which one appears to be home-made, and which one looks store-bought? Cookie 1:",
+  fs.readFileSync("./cookie1.png"),
+  "Cookie 2",
+  fs.readFileSync("./cookie2.png"),
 ]);
 ```
 
@@ -358,7 +356,7 @@ await gemini.ask([
 > You can also place buffers in the `data` field in the config (this is the v1 method, but it still works). These buffers will be placed, in order, directly after the content in the main message.
 
 > [!NOTE]
-> This method can NOT be used in a Chat. Use the `messages` field  instead (see [Gemini.createChat()](#geminicreatechat)).
+> This method can NOT be used in a Chat. Use the `messages` field instead (see [Gemini.createChat()](#geminicreatechat)).
 
 ##### Message Form:
 
@@ -372,7 +370,7 @@ Please check `src/types.ts` for more information about what is accepted in the `
 > These are Google REST API defaults.
 
 | Field Name          | Description                                                                                                                                                                                                    | Default Value                                                                       |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
 | `format`            | Whether to return the detailed, raw JSON output. Typically not recommended, unless you are an expert. Can either be `Gemini.JSON` or `Gemini.TEXT`                                                             | `Gemini.TEXT`                                                                       |
 | `topP`              | See [Google's parameter explanations](https://cloud.google.com/vertex-ai/docs/generative-ai/start/quickstarts/api-quickstart#parameter_definitions)                                                            | `undefined (default is 0.95 for v1.5 models)`                                       |
 | `topK`              | See [Google's parameter explanations](https://cloud.google.com/vertex-ai/docs/generative-ai/start/quickstarts/api-quickstart#parameter_definitions). Note that this field is **not** available on v1.5 models. | `undefined`                                                                         |
@@ -394,10 +392,10 @@ import Gemini from "gemini-g4f";
 const gemini = new Gemini(API_KEY);
 
 console.log(
-	await gemini.ask("Hello!", {
-		temperature: 0.5,
-		topP: 1,
-	})
+  await gemini.ask("Hello!", {
+    temperature: 0.5,
+    topP: 1,
+  }),
 );
 ```
 
@@ -418,12 +416,12 @@ In order to set each category, provide an object like this into the `safetySetti
 
 ```javascript
 await gemini.ask("Hello!", {
-	safetySettings: {
-		hate: Gemini.SafetyThreshold.BLOCK_SOME,
-		sexual: Gemini.SafetyThreshold.BLOCK_SOME,
-		harassment: Gemini.SafetyThreshold.BLOCK_SOME,
-		dangerous: Gemini.SafetyThreshold.BLOCK_SOME,
-	},
+  safetySettings: {
+    hate: Gemini.SafetyThreshold.BLOCK_SOME,
+    sexual: Gemini.SafetyThreshold.BLOCK_SOME,
+    harassment: Gemini.SafetyThreshold.BLOCK_SOME,
+    dangerous: Gemini.SafetyThreshold.BLOCK_SOME,
+  },
 });
 ```
 
@@ -449,40 +447,33 @@ The following examples entail generating cookie recipies with Gemini returning a
 This feature can be enabled simply by setting the `jsonSchema` config to `true`. It is ideal that you specify how you want the JSON to be shaped in your prompt, but it is not necessary.
 
 ```javascript
-await gemini.ask(
-	"List 5 popular cookie recipes. Give them as an array of objects, each with a recipe_name field.",
-	{
-		jsonSchema: true,
-	}
-);
+await gemini.ask("List 5 popular cookie recipes. Give them as an array of objects, each with a recipe_name field.", {
+  jsonSchema: true,
+});
 ```
 
 However, you can also set a specific JSON schema with code. Pass in a JSON schema object as follows into `jsonSchema`:
 
 ```javascript
-await gemini.ask(
-	"List 5 popular cookie recipes. Give them as an array of objects, each with a recipe_name field.",
-	{
-		jsonSchema: {
-			type: Gemini.SchemaType.ARRAY,
-			items: {
-				type: Gemini.SchemaType.OBJECT,
-				properties: {
-					recipe_name: {
-						type: Gemini.SchemaType.STRING,
-					},
-				},
-			},
-		},
-	}
-);
+await gemini.ask("List 5 popular cookie recipes. Give them as an array of objects, each with a recipe_name field.", {
+  jsonSchema: {
+    type: Gemini.SchemaType.ARRAY,
+    items: {
+      type: Gemini.SchemaType.OBJECT,
+      properties: {
+        recipe_name: {
+          type: Gemini.SchemaType.STRING,
+        },
+      },
+    },
+  },
+});
 ```
 
 The available types are `ARRAY`, `OBJECT`, `STRING`, `NUMBER`, `INTEGER`, `BOOLEAN`, accessible in the `Gemini.SchemaType` enum. Learn more about this syntax at [Google's documentation](https://ai.google.dev/gemini-api/docs/api-overview#json).
 
 > [!NOTE]
 > When you pass in this schema object into `gemini-1.5-flash-latest`, it will be directly included as text after your prompt, wrapped in `<JSONSchema>` tags. However, with `gemini-1.5-pro-latest`, Gemini utilizes controlled generation/constrained decoding to force the output to be in your JSON schema. In other words, Gemini 1.5 Flash should be able to reasonably infer what you want to do, but in the cases where it still deviates from your schema, use Gemini 1.5 Pro to force it.
-
 
 ### `Gemini.createChat()`
 
@@ -532,14 +523,16 @@ console.log(await chat.ask("Hi!"));
 // Creating a new chat, with existing messages
 
 const newChat = gemini.createChat({
-	messages: chat.messages,
+  messages: chat.messages,
 });
 
 console.log(await newChat.ask("What's the last thing I said?"));
 ```
 
 ### `Chat.messages`
+
 A `Message` type in the API is defined as:
+
 ```javascript
 type Message = { parts: Part[]; role: Role };
 ```
@@ -548,19 +541,23 @@ type Message = { parts: Part[]; role: Role };
 you can convert a message to parts using the `messageToParts()` function (see below).
 
 ### Uploading files in a message (Advanced)
+
 To allow for easy upload of files, the API provides a `FileUpload` type, defined as:
+
 ```javascript
 type FileUpload = { buffer: ArrayBuffer, filePath: string };
-````
+```
 
 Next, the API provides a `messageToParts()` function:
+
 ```javascript
 export const messageToParts = async (
 	messages: (Uint8Array | ArrayBuffer | FileUpload | string)[], // The messages to convert
 	gemini: Gemini, // The Gemini object
 ): Promise<Part[]> => ...
 ```
-It takes in an array of `string | Buffer | FileUpload`, as well as a `Gemini` object, and returns an array of `Part` objects. 
+
+It takes in an array of `string | Buffer | FileUpload`, as well as a `Gemini` object, and returns an array of `Part` objects.
 
 Lastly, you can then simply pass this `parts` array to initialize a `Message` object.
 
@@ -575,23 +572,25 @@ const gemini = new Gemini(API_KEY);
 
 // Let's assume this is how the messages are stored in your application; alternate structures are of course possible
 const messages = [
-    { role: "user", content: "Hi!" }, // message 1
-    { role: "model", content: "Hello! How can I help you today?"}, // response to message 1
-    { role: "user", content: [
-        "Between these two cookies, which one appears to be home-made, and which one looks store-bought?",
-	    fs.readFileSync("./cookie1.png"),
-	    fs.readFileSync("./cookie2.png"),
-      ] 
-    }, // message 2
-    { role: "model", content: "The first cookie looks home-made, and the second looks store-bought."}, // response to message 2
+  { role: "user", content: "Hi!" }, // message 1
+  { role: "model", content: "Hello! How can I help you today?" }, // response to message 1
+  {
+    role: "user",
+    content: [
+      "Between these two cookies, which one appears to be home-made, and which one looks store-bought?",
+      fs.readFileSync("./cookie1.png"),
+      fs.readFileSync("./cookie2.png"),
+    ],
+  }, // message 2
+  { role: "model", content: "The first cookie looks home-made, and the second looks store-bought." }, // response to message 2
 ];
 
 const chat_messages = []; // array of Message objects that we will pass to the Chat
 
 for (const message of messages) {
-    const parts = await messageToParts(message.content, gemini);
-    const chat_message = { parts: parts, role: message.role };
-    chat_messages.push(chat_message);
+  const parts = await messageToParts(message.content, gemini);
+  const chat_message = { parts: parts, role: message.role };
+  chat_messages.push(chat_message);
 }
 
 // Now, we can start a conversation
@@ -608,20 +607,21 @@ const gemini = new Gemini(API_KEY);
 
 // In this example, we structure our messages differently, to utilize FileUpload objects
 const messages = [
-    { role: "user", content: "Hi!" }, // message 1
-    { role: "model", content: "Hello! How can I help you today?"}, // response to message 1
-    { role: "user", content: [
-        "Between these two cookies, which one appears to be home-made, and which one looks store-bought?",
-        { buffer: fs.readFileSync("./cookie1.png"), filePath: "./cookie1.png" }, // FileUpload object
-        { buffer: fs.readFileSync("./cookie2.png"), filePath: "./cookie2.png" }, // FileUpload object
-      ] 
-    }, // message 2
-    { role: "model", content: "The first cookie looks home-made, and the second looks store-bought."}, // response to message 2
+  { role: "user", content: "Hi!" }, // message 1
+  { role: "model", content: "Hello! How can I help you today?" }, // response to message 1
+  {
+    role: "user",
+    content: [
+      "Between these two cookies, which one appears to be home-made, and which one looks store-bought?",
+      { buffer: fs.readFileSync("./cookie1.png"), filePath: "./cookie1.png" }, // FileUpload object
+      { buffer: fs.readFileSync("./cookie2.png"), filePath: "./cookie2.png" }, // FileUpload object
+    ],
+  }, // message 2
+  { role: "model", content: "The first cookie looks home-made, and the second looks store-bought." }, // response to message 2
 ];
 
 /// remaining code is the same as the previous example
 ```
-
 
 ## FAQ
 
@@ -645,12 +645,9 @@ With `data`:
 ```javascript
 import fs from "fs";
 
-await gemini.ask(
-	"Between these two cookies, which one appears to be home-made, and which one looks store-bought?",
-	{
-		data: [fs.readFileSync("./cookie1.png"), fs.readFileSync("./cookie2.png")],
-	}
-);
+await gemini.ask("Between these two cookies, which one appears to be home-made, and which one looks store-bought?", {
+  data: [fs.readFileSync("./cookie1.png"), fs.readFileSync("./cookie2.png")],
+});
 ```
 
 New Version:
@@ -659,9 +656,9 @@ New Version:
 import fs from "fs";
 
 await gemini.ask([
-	"Between these two cookies, which one appears to be home-made, and which one looks store-bought?",
-	fs.readFileSync("./cookie1.png"),
-	fs.readFileSync("./cookie2.png"),
+  "Between these two cookies, which one appears to be home-made, and which one looks store-bought?",
+  fs.readFileSync("./cookie1.png"),
+  fs.readFileSync("./cookie2.png"),
 ]);
 ```
 
@@ -692,9 +689,9 @@ import Gemini from "gemini-g4f";
 const gemini = new Gemini(API_KEY);
 
 console.log(
-	await gemini.ask("Hello!", {
-		model: "gemini-1.5-pro-latest",
-	})
+  await gemini.ask("Hello!", {
+    model: "gemini-1.5-pro-latest",
+  }),
 );
 ```
 
@@ -710,7 +707,7 @@ Here's how you can change it to, say, v1:
 import Gemini from "gemini-g4f";
 
 const gemini = new Gemini(API_KEY, {
-	apiVersion: "v1",
+  apiVersion: "v1",
 });
 ```
 
@@ -725,7 +722,7 @@ import Gemini from "gemini-g4f";
 import fetch from "node-fetch";
 
 const gemini = new Gemini(API_KEY, {
-	fetch: fetch,
+  fetch: fetch,
 });
 ```
 
@@ -739,7 +736,7 @@ Gemini AI is a ESM (`import`) only module. It is recommended that you use ESM in
 
 ```javascript
 import("gemini-g4f").then(async ({ default: Gemini }) => {
-	let gemini = new Gemini(API_KEY);
+  let gemini = new Gemini(API_KEY);
 });
 ```
 

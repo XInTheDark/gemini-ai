@@ -43,7 +43,7 @@ import Gemini from "gemini-g4f";
 const gemini = new Gemini(API_KEY);
 
 gemini.ask("Hi!", {
-	stream: console.log,
+  stream: console.log,
 });
 ```
 
