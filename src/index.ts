@@ -18,6 +18,12 @@ import type {
 
 import { SafetyError, getFileType, handleReader, pairToMessage } from "./utils";
 
+// Official Gemini SDK
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+// Constants
+const BASE_URL = "https://generativelanguage.googleapis.com";
+
 const uploadFile = async ({
 	file,
 	mimeType,
@@ -27,8 +33,6 @@ const uploadFile = async ({
 	mimeType: string;
 	gemini: Gemini;
 }) => {
-	const BASE_URL = "https://generativelanguage.googleapis.com";
-
 	function generateBoundary() {
 		let str = "";
 		for (let i = 0; i < 2; i++) {
@@ -119,8 +123,8 @@ export const messageToParts = async (
 			const mimeType = await getFileType(buffer, filePath);
 			if (!mimeType.startsWith("video")) {
 				parts.push({
-					inline_data: {
-						mime_type: mimeType,
+          inlineData: {
+            mimeType: mimeType,
 						data: Buffer.from(buffer).toString("base64"),
 					},
 				});
@@ -132,7 +136,7 @@ export const messageToParts = async (
 				});
 				parts.push({
 					fileData: {
-						mime_type: mimeType,
+            mimeType: mimeType,
 						fileUri: fileURI,
 					},
 				});
@@ -163,6 +167,7 @@ export const messageToParts = async (
 };
 
 class Gemini {
+  googleGemini: GoogleGenerativeAI;
 	readonly key: string;
 	readonly apiVersion: string;
 	readonly fetch: typeof fetch;
@@ -190,6 +195,8 @@ class Gemini {
 		this.key = key;
 		this.fetch = parsedOptions.fetch;
 		this.apiVersion = parsedOptions.apiVersion;
+
+    this.googleGemini = new GoogleGenerativeAI(key);
 	}
 
 	async query<C extends Command>(
@@ -232,65 +239,6 @@ class Gemini {
 
 			return response;
 		}
-	}
-
-	async count(
-		message: string,
-		options: Partial<CommandOptionMap[Command.Count]> = {},
-	): Promise<CommandResponseMap[Command.Count]> {
-		const parsedOptions: CommandOptionMap[Command.Count] = {
-			...{
-				model: "gemini-1.5-flash-latest",
-			},
-			...options,
-		};
-
-		const body: QueryBodyMap[Command.Count] = {
-			contents: [
-				{
-					parts: [{ text: message }],
-					role: "user",
-				},
-			],
-		};
-
-		const response: Response = await this.query(
-			parsedOptions.model,
-			Command.Count,
-			body,
-		);
-
-		const output: QueryResponseMap[Command.Count] = await response.json();
-		return output.totalTokens;
-	}
-
-	async embed(
-		message: string,
-		options: Partial<CommandOptionMap[Command.Embed]> = {},
-	) {
-		const parsedOptions: CommandOptionMap[Command.Embed] = {
-			...{
-				model: "embedding-001",
-			},
-			...options,
-		};
-
-		const body: QueryBodyMap[Command.Embed] = {
-			model: `models/${parsedOptions.model}`,
-			content: {
-				parts: [{ text: message }],
-				role: "user",
-			},
-		};
-
-		const response: Response = await this.query(
-			parsedOptions.model,
-			Command.Embed,
-			body,
-		);
-
-		const output: QueryResponseMap[Command.Embed] = await response.json();
-		return output.embedding.values;
 	}
 
 	private getTextObject = (response: GeminiResponse) =>

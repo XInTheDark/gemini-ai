@@ -71,8 +71,6 @@ Read the full docs at https://github.com/XInTheDark/gemini-ai.
   - [Initialization](https://github.com/XInTheDark/gemini-ai?tab=readme-ov-file#inititalization)
   - [Method Patterns](https://github.com/XInTheDark/gemini-ai?tab=readme-ov-file#method-patterns)
   - [`Gemini.ask()` Method](https://github.com/XInTheDark/gemini-ai?tab=readme-ov-file#geminiask)
-  - [`Gemini.count()` Method](https://github.com/XInTheDark/gemini-ai?tab=readme-ov-file#geminicount)
-  - [`Gemini.embed()` Method](https://github.com/XInTheDark/gemini-ai?tab=readme-ov-file#geminiembed)
   - [`Gemini.createChat()` Method](https://github.com/XInTheDark/gemini-ai?tab=readme-ov-file#geminicreatechat)
 - [**FAQ**](https://github.com/XInTheDark/gemini-ai?tab=readme-ov-file#faq)
 - [**Contributors**](https://github.com/XInTheDark/gemini-ai?tab=readme-ov-file#contributors)

@@ -84,8 +84,6 @@ There's also more...
   - [Initialization](#inititalization)
   - [Method Patterns](#method-patterns)
   - [`Gemini.ask()` Method](#geminiask)
-  - [`Gemini.count()` Method](#geminicount)
-  - [`Gemini.embed()` Method](#geminiembed)
   - [`Gemini.createChat()` Method](#geminicreatechat)
 - [**FAQ**](#faq)
 - [**Contributors**](#contributors)
@@ -485,43 +483,6 @@ The available types are `ARRAY`, `OBJECT`, `STRING`, `NUMBER`, `INTEGER`, `BOOLE
 > [!NOTE]
 > When you pass in this schema object into `gemini-1.5-flash-latest`, it will be directly included as text after your prompt, wrapped in `<JSONSchema>` tags. However, with `gemini-1.5-pro-latest`, Gemini utilizes controlled generation/constrained decoding to force the output to be in your JSON schema. In other words, Gemini 1.5 Flash should be able to reasonably infer what you want to do, but in the cases where it still deviates from your schema, use Gemini 1.5 Pro to force it.
 
-### `Gemini.count()`
-
-This method uses the `countTokens` command to figure out the number of tokens _in your input_.
-
-Config available:
-| Field Name | Description | Default Value |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| `model` | Which model to use. Can be any model Google has available, but reasonably must be `gemini-pro` | Automatic based on Context |
-
-Example Usage:
-
-```javascript
-import Gemini from "gemini-g4f";
-
-const gemini = new Gemini(API_KEY);
-
-console.log(await gemini.count("Hello!"));
-```
-
-### `Gemini.embed()`
-
-This method uses the `embedContent` command (currently **only on `embedding-001`**) to generate an embedding matrix for your input.
-
-Config available:
-| Field Name | Description | Default Value |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| `model` | Which model to use. Can be any model Google has available, but reasonably must be `embedding-001` | `embedding-001` |
-
-Example Usage:
-
-```javascript
-import Gemini from "gemini-g4f";
-
-const gemini = new Gemini(API_KEY);
-
-console.log(await gemini.embed("Hello!"));
-```
 
 ### `Gemini.createChat()`
 
