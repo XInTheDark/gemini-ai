@@ -16,7 +16,8 @@
     "build": "tsup",
     "test": "vitest",
     "coverage": "vitest --coverage",
-    "check": "bunx @biomejs/biome check --apply ."
+    "check": "bunx @biomejs/biome check --apply .",
+    "fix-lint": "npx prettier . --write --list-different"
   },
   "keywords": [
     "google",

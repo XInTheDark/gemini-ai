@@ -1,4 +1,5 @@
 import { ProxyAgent } from "undici";
+import {GenerateContentResult, GenerateContentStreamResult} from "@google/generative-ai";
 
 type FileType =
 	| "image/png"
@@ -69,10 +70,9 @@ export type Candidate = {
 	safetyRatings: SafetyRating[];
 };
 
-export type GeminiResponse = {
-	candidates: Candidate[];
-	promptFeedback: PromptFeedback;
-};
+export type GeminiResponse = GenerateContentStreamResult | GenerateContentResult;
+export type GeminiResponseStream = GenerateContentStreamResult;
+export type GeminiResponseNoStream = GenerateContentResult;
 
 export enum Command {
 	StreamGenerate = "streamGenerateContent",
@@ -106,12 +106,11 @@ type GenerateContentBody = {
 };
 
 /**
- * The response from the REST API to generateContent or streamGenerateContent
+ * The response from the Gemini API to generateContent or streamGenerateContent
  */
-type GenerateContentQueryOutput = {
-	candidates: Candidate[];
-	promptFeedback: PromptFeedback;
-};
+type GenerateContentOutputStream = AsyncGenerator;
+type GenerateContentOutputNoStream = string;
+export type GenerateContentOutput = GenerateContentOutputStream | GenerateContentOutputNoStream;
 
 /**
  * The model used for an API call
@@ -133,34 +132,29 @@ export type QueryBodyMap = {
  * The response from the REST API for each command
  */
 export type QueryResponseMap = {
-	[Command.StreamGenerate]: GenerateContentQueryOutput;
-	[Command.Generate]: GenerateContentQueryOutput;
-	[Command.Embed]: {
-		embedding: { values: number[] };
-	};
-	[Command.Count]: {
-		totalTokens: number;
-	};
+	[Command.StreamGenerate]: GenerateContentOutputStream;
+	[Command.Generate]: GenerateContentOutput;
 };
 
 // These types are also directly used, as a string, in the Gemini class static properties
 // If you are to change these types, ensure to modify the statics in the Gemini class as well.
 export type TextFormat = "text";
-export type JSONFormat = "json";
-export type Format = TextFormat | JSONFormat;
+// export type JSONFormat = "json";
+// export type Format = TextFormat | JSONFormat;
+export type Format = TextFormat;
 
 /**
  * The output format for each command.
  */
 export type CommandResponseMap<F extends Format = TextFormat> = {
-	[Command.StreamGenerate]: F extends JSONFormat
-		? QueryResponseMap[Command.StreamGenerate]
-		: string;
-	[Command.Generate]: F extends JSONFormat
-		? QueryResponseMap[Command.Generate]
-		: string;
-	[Command.Embed]: number[];
-	[Command.Count]: number;
+	// [Command.StreamGenerate]: F extends JSONFormat
+	// 	? QueryResponseMap[Command.StreamGenerate]
+	// 	: string;
+	// [Command.Generate]: F extends JSONFormat
+	// 	? QueryResponseMap[Command.Generate]
+	// 	: string;
+  [Command.StreamGenerate]: QueryResponseMap[Command.StreamGenerate]
+  [Command.Generate]: QueryResponseMap[Command.Generate]
 };
 
 export type GeminiOptions = {
@@ -189,8 +183,8 @@ export type CommandOptionMap<F extends Format = TextFormat> = {
 			dangerous: SafetyThreshold;
 		};
 		messages: ([string, string] | Message)[];
-		stream?(stream: CommandResponseMap<F>[Command.StreamGenerate]): void;
-		jsonSchema: boolean | Schema;
+		stream?: false;
+		jsonSchema: Schema | undefined;
 	};
 	[Command.Embed]: {
 		model: Model;
@@ -211,7 +205,8 @@ export enum SafetyThreshold {
 	BLOCK_NONE = "BLOCK_NONE",
 }
 
-export type FormatType<T> = T extends JSONFormat ? GeminiResponse : string;
+// export type FormatType<T> = T extends JSONFormat ? GeminiResponse : string;
+export type FormatType = GeminiResponse;
 
 export type ChatOptions = {
 	messages: [string, string][] | Message[];
@@ -226,8 +221,8 @@ export type ChatOptions = {
 export type ChatAskOptions<F extends Format = TextFormat> = {
 	format: F;
 	data: [];
-	stream?(stream: CommandResponseMap<F>[Command.StreamGenerate]): void;
-	jsonSchema: boolean | Schema;
+	stream?: false;
+	jsonSchema: Schema | undefined;
 };
 
 export enum SchemaType {

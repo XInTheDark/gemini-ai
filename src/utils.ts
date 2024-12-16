@@ -79,49 +79,6 @@ export class SafetyError extends Error {
 	}
 }
 
-export const handleReader = async (
-	response: Response,
-	cb: (response: GeminiResponse) => void,
-) => {
-	if (!response.body)
-		throw new Error(
-			`An error occurred when attempting to read Gemini's response ${await response.text()}`,
-		);
-
-	const decoder = new TextDecoder("utf-8");
-
-	try {
-		// This solution breaks on Safari or any fetch polyfill without AsyncIterators, but it works for node-fetch.
-		// response.body has an asyncIterator in modern most browsers
-		// @ts-ignore
-		for await (const chunk of response.body) {
-			cb(JSON.parse(decoder.decode(chunk).replace(/^data: /, "")));
-		}
-	}
-	catch (e) {
-		if (e instanceof SafetyError) throw e;
-
-		try {
-			// This solution works for nearly every fetch, except for the node-fetch polyfill.
-			const reader = response.body.getReader();
-
-			await reader.read().then(function processText({done, value}) {
-				if (done) return;
-
-				cb(JSON.parse(decoder.decode(value).replace(/^data: /, "")));
-
-				return reader.read().then(processText);
-			});
-		}
-		catch (err) {
-			if (err instanceof SafetyError) throw err;
-			throw new Error(
-				`An error occurred when attempting to stream content from Gemini: ${err.stack}`,
-			);
-		}
-	}
-};
-
 export const pairToMessage = (message: [string, string]): Message[] => {
 	return [
 		{

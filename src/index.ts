@@ -6,20 +6,20 @@ import type {
 	CommandOptionMap,
 	CommandResponseMap,
 	Format,
-	FormatType,
 	GeminiOptions,
-	GeminiResponse,
+  GeminiResponse,
+  GeminiResponseStream,
+  GenerateContentOutput,
 	FileUpload,
 	Message,
 	Part,
 	QueryBodyMap,
-	QueryResponseMap,
 } from "./types";
 
-import { SafetyError, getFileType, handleReader, pairToMessage } from "./utils";
+import { SafetyError, getFileType, pairToMessage } from "./utils";
 
 // Official Gemini SDK
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import {GenerateContentResult, GoogleGenerativeAI} from '@google/generative-ai';
 
 // Constants
 const BASE_URL = "https://generativelanguage.googleapis.com";
@@ -199,100 +199,19 @@ class Gemini {
     this.googleGemini = new GoogleGenerativeAI(key);
 	}
 
-	async query<C extends Command>(
-		model: Model,
-		command: C,
-		body: QueryBodyMap[C],
-		stop: AbortSignal = null,
-	): Promise<Response> {
-		let iter_models = model instanceof Array ? model : model === "auto" ? ["gemini-1.5-pro-latest", "gemini-1.5-flash-latest"] : [model];
-
-		for (let model_idx = 0; model_idx < iter_models.length; model_idx++) {
-			const model = iter_models[model_idx];
-
-			const opts = {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(body),
-				signal: stop,
-			};
-
-			const url = new URL(
-				`https://generativelanguage.googleapis.com/${this.apiVersion}/models/${model}:${command}`,
-			);
-
-			url.searchParams.append("key", this.key);
-			if (command === Command.StreamGenerate)
-				url.searchParams.append("alt", "sse");
-
-			const response = await this.fetch(url.toString(), opts);
-
-			if (!response.ok) {
-				if (model_idx === iter_models.length - 1)
-					throw new Error(
-						`There was an error when querying Gemini.\n${await response.text()}`,
-					);
-				continue;
-			}
-
-			return response;
-		}
-	}
-
-	private getTextObject = (response: GeminiResponse) =>
-		response.candidates[0].content.parts[0];
-
-	private switchFormat =
-		<F extends Format>(format: F = Gemini.TEXT as F) =>
-		(response: GeminiResponse): FormatType<F> => {
-			if (response.candidates[0].finishReason === "SAFETY") {
-				throw new SafetyError(
-					`Your prompt was blocked by Google. Here are the Harm Categories: \n${JSON.stringify(
-						response.candidates[0].safetyRatings,
-						null,
-						4,
-					)}`,
-				);
-			}
-
-			switch (format) {
-				case Gemini.TEXT:
-					return this.getTextObject(response).text as FormatType<F>;
-				case Gemini.JSON:
-					return response as FormatType<F>;
-			}
-		};
-
-	private getText = this.switchFormat(Gemini.TEXT);
-
-	private handleStream = async <F extends Format>(
-		response: Response,
-		format: F,
-		cb: (response: FormatType<F>) => void,
-	) => {
-		const formatter: (response: GeminiResponse) => FormatType<F> =
-			this.switchFormat(format);
-
-		let res: GeminiResponse;
-		let text = "";
-
-		await handleReader(response, (value: GeminiResponse) => {
-			res = value;
-			text += this.getText(value);
-
-			cb(formatter(value));
-		});
-
-		this.getTextObject(res).text = text;
-
-		return formatter(res);
-	};
+	private handleStream = async function (
+		response: GeminiResponseStream,
+  ) {
+    return (async function* () {
+      for await (const chunk of response.stream) {
+        yield chunk;
+      }
+    })();
+  }
 
 	async ask<F extends Format = typeof Gemini.TEXT>(
 		message: string | (string | Uint8Array | ArrayBuffer)[] | Message,
-		options: Partial<CommandOptionMap<F>[Command.Generate]> = {}, stop: AbortSignal = null,
+		options: Partial<CommandOptionMap<F>[Command.Generate]> = {},
 	): Promise<CommandResponseMap<F>[Command.Generate]> {
 		const parsedOptions: CommandOptionMap<F>[Command.Generate] = {
 			...{
@@ -303,10 +222,10 @@ class Gemini {
 				data: [],
 				messages: [],
 				safetySettings: {
-					hate: Gemini.SafetyThreshold.BLOCK_SOME,
-					sexual: Gemini.SafetyThreshold.BLOCK_SOME,
-					harassment: Gemini.SafetyThreshold.BLOCK_SOME,
-					dangerous: Gemini.SafetyThreshold.BLOCK_SOME,
+					hate: Gemini.SafetyThreshold.BLOCK_NONE,
+					sexual: Gemini.SafetyThreshold.BLOCK_NONE,
+					harassment: Gemini.SafetyThreshold.BLOCK_NONE,
+					dangerous: Gemini.SafetyThreshold.BLOCK_NONE,
 				},
 				systemInstruction: "",
 				jsonSchema: undefined,
@@ -348,29 +267,19 @@ class Gemini {
 			),
 		];
 
+    let lastMessage;
 		if (!Array.isArray(message) && typeof message !== "string") {
 			if (message.role === "model")
 				throw new Error("Please prompt with role as 'user'");
-			contents.push(message);
+			lastMessage = message;
 		} else {
 			const messageParts = [message, parsedOptions.data].flat();
 			const parts = await messageToParts(messageParts, this);
 
-			if (
-				parsedOptions.jsonSchema &&
-				parsedOptions.model !== "gemini-1.5-pro-latest"
-			) {
-				parts.push({
-					text: `Use this JSON schema: <JSONSchema>${JSON.stringify(
-						parsedOptions.jsonSchema,
-					)}</JSONSchema>`,
-				});
-			}
-
-			contents.push({
+			lastMessage = {
 				parts: parts,
 				role: "user",
-			});
+			};
 		}
 
 		const body: QueryBodyMap[typeof command] = {
@@ -383,11 +292,7 @@ class Gemini {
 				responseMimeType: parsedOptions.jsonSchema
 					? "application/json"
 					: undefined,
-				responseSchema:
-					typeof parsedOptions.jsonSchema === "object" &&
-					parsedOptions.model === "gemini-1.5-pro-latest"
-						? parsedOptions.jsonSchema
-						: undefined,
+				responseSchema: parsedOptions.jsonSchema,
 			},
 			safetySettings,
 		};
@@ -399,22 +304,36 @@ class Gemini {
 			};
 		}
 
-		const response: Response = await this.query(
-			parsedOptions.model,
-			command,
-			body,
-			stop,
-		);
+    const googleGemini = this.googleGemini;
+    const model = parsedOptions.model;
 
-		if (parsedOptions.stream) {
-			return this.handleStream(
-				response,
-				parsedOptions.format,
-				parsedOptions.stream,
-			);
-		}
+    let iter_models = model instanceof Array ? model : model === "auto" ? ["gemini-1.5-pro-latest", "gemini-1.5-flash-latest"] : [model];
 
-		return this.switchFormat(parsedOptions.format)(await response.json());
+    for (let model_idx = 0; model_idx < iter_models.length; model_idx++) {
+      const model = iter_models[model_idx];
+      const gemini = googleGemini.getGenerativeModel({ model: model });
+      const geminiChat = gemini.startChat({
+        // @ts-ignore
+        history: contents,
+      })
+
+      let response;
+      try {
+        if (parsedOptions.stream) {
+          response = await geminiChat.sendMessageStream(lastMessage);
+          return this.handleStream(response);
+        } else {
+          let streamResponse = await geminiChat.sendMessage(lastMessage);
+          response = streamResponse.response.text();
+          return response;
+        }
+      }
+      catch (e) {
+        if (model_idx === iter_models.length - 1) {
+          throw e;
+        }
+      }
+    }
 	}
 
 	createChat(options: Partial<ChatOptions> = {}) {
@@ -491,27 +410,26 @@ class Chat {
 
 		const response = await this.gemini.ask(parsedMessage, {
 			...parsedConfig,
-			format: Gemini.JSON,
+			format: Gemini.TEXT,
 			messages: this.messages,
-			stream: parsedConfig.stream
-				? (res) =>
-						parsedConfig.stream(
-							options.format === Gemini.JSON
-								? (res as FormatType<F>)
-								: (res.candidates[0].content.parts[0].text as FormatType<F>),
-						)
-				: undefined,
+			stream: parsedConfig.stream,
 		});
 
-		this.messages.push(parsedMessage);
-		this.messages.push({
-			parts: response.candidates[0].content.parts,
-			role: "model",
-		});
+		// this.messages.push(parsedMessage);
+    // if (typeof response === "string") {
+    //   this.messages.push({
+    //     parts: [{text: response}],
+    //     role: "model",
+    //   });
+    // }
+    // else {
+    //   // handling the async generator is kinda confusing
+    // }
 
-		return options.format === Gemini.JSON
-			? (response as FormatType<F>)
-			: (response.candidates[0].content.parts[0].text as FormatType<F>);
+		// return options.format === Gemini.JSON
+		// 	? (response as FormatType<F>)
+		// 	: (response.candidates[0].content.parts[0].text as FormatType<F>);
+    return response;
 	}
 }
 
@@ -521,7 +439,6 @@ export type {
 	Format,
 	Message,
 	Part,
-	GeminiResponse,
 	CommandResponseMap,
 	CommandOptionMap,
 	GeminiOptions,
