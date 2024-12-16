@@ -1,5 +1,5 @@
 import { Command, SchemaType, isFileUpload, Model, OpenAIMessage } from "./types";
-import { HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+import { safetyDisabledSettings } from "./constants";
 
 import type {
   ChatAskOptions,
@@ -402,4 +402,4 @@ class Chat {
 export default Gemini;
 
 export type { Format, Message, Part, CommandResponseMap, CommandOptionMap, GeminiOptions, ChatOptions, ChatAskOptions };
-export type { HarmCategory, HarmBlockThreshold };
+export { safetyDisabledSettings };
