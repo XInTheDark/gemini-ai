@@ -1,4 +1,4 @@
-import { Command, HarmCategory, SafetyThreshold, SchemaType, isFileUpload, Model } from "./types";
+import { Command, HarmCategory, SafetyThreshold, SchemaType, isFileUpload, Model, OpenAIMessage } from "./types";
 
 import type {
   ChatAskOptions,
@@ -351,6 +351,17 @@ class Chat {
       this.messages = parsedOptions.messages.flatMap(pairToMessage);
     } else {
       this.messages = parsedOptions.messages as Message[];
+    }
+  }
+
+  append(message: string | OpenAIMessage) {
+    if (typeof message === "string") {
+      this.messages.push({
+        parts: [{ text: message }],
+        role: this.messages.at(-1)?.role === "model" ? "user" : "model",
+      });
+    } else {
+      this.messages.push({ role: message.role, parts: [{ text: message.content }] });
     }
   }
 

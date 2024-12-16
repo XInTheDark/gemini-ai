@@ -56,7 +56,6 @@ const gemini = new Gemini(API_KEY);
 const chat = gemini.createChat();
 
 console.log(await chat.ask("Hi!"));
-console.log(await chat.ask("What's the last thing I said?"));
 ```
 
 Read the full docs at https://github.com/XInTheDark/gemini-ai.

@@ -503,37 +503,22 @@ const gemini = new Gemini(API_KEY);
 
 const chat = gemini.createChat();
 
-console.log(await chat.ask("Hi!"));
+const msg = "Hi!";
+const response = await chat.ask(msg);
+console.log(response);
 
-// Now, you can start a conversation
+chat.append({ role: "user", content: msg });
+chat.append({ role: "model", content: response });
+
+// Now, you can continue the conversation
 console.log(await chat.ask("What's the last thing I said?"));
-```
-
-```javascript
-// "Continuing" a conversation:
-
-import Gemini from "gemini-g4f";
-
-const gemini = new Gemini(API_KEY);
-
-const chat = gemini.createChat();
-
-console.log(await chat.ask("Hi!"));
-
-// Creating a new chat, with existing messages
-
-const newChat = gemini.createChat({
-  messages: chat.messages,
-});
-
-console.log(await newChat.ask("What's the last thing I said?"));
 ```
 
 ### `Chat.messages`
 
 A `Message` type in the API is defined as:
 
-```javascript
+```typescript
 type Message = { parts: Part[]; role: Role };
 ```
 
@@ -544,13 +529,13 @@ you can convert a message to parts using the `messageToParts()` function (see be
 
 To allow for easy upload of files, the API provides a `FileUpload` type, defined as:
 
-```javascript
-type FileUpload = { buffer: ArrayBuffer, filePath: string };
+```typescript
+type FileUpload = { buffer: ArrayBuffer; filePath: string };
 ```
 
 Next, the API provides a `messageToParts()` function:
 
-```javascript
+```typescript
 export const messageToParts = async (
 	messages: (Uint8Array | ArrayBuffer | FileUpload | string)[], // The messages to convert
 	gemini: Gemini, // The Gemini object

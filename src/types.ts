@@ -52,6 +52,7 @@ type Role = "user" | "model" | "system";
 type SafetyRating = { category: string; probability: string };
 
 export type Message = { parts: Part[]; role: Role };
+export type OpenAIMessage = { role: Role; content: string };
 
 export type FileUpload = { buffer: ArrayBuffer; filePath: string };
 export function isFileUpload(data: any): data is FileUpload {
