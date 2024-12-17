@@ -341,6 +341,7 @@ class Chat {
     message: string | (string | Uint8Array | ArrayBuffer)[] | Message,
     options: Partial<ChatAskOptions<F>> = {},
   ): Promise<CommandResponseMap<F>[Command.Generate]> {
+    console.log("message", message);
     const parsedConfig: CommandOptionMap<F>[Command.Generate] = {
       ...{
         data: [],
@@ -353,15 +354,15 @@ class Chat {
       ...options,
     };
 
-    if (this.messages.at(-1)?.role === "user") {
-      throw new Error(
-        "Gemini has not yet responded to your last message. Please ensure you are running chat commands asynchronously.",
-      );
-    }
+    // if (this.messages.at(-1)?.role === "user") {
+    //   throw new Error(
+    //     "Gemini has not yet responded to your last message. Please ensure you are running chat commands asynchronously.",
+    //   );
+    // }
 
     let parsedMessage: Message;
     if (!Array.isArray(message) && typeof message !== "string") {
-      if (message.role === "model") throw new Error("Please prompt with role as 'user'");
+      // if (message.role === "model") throw new Error("Please prompt with role as 'user'");
       parsedMessage = message;
     } else {
       parsedMessage = {
