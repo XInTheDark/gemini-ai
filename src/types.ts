@@ -172,12 +172,6 @@ export type CommandOptionMap<F extends Format = TextFormat> = {
     stream?: false;
     jsonSchema: Schema | undefined;
   };
-  [Command.Embed]: {
-    model: Model;
-  };
-  [Command.Count]: {
-    model: Model;
-  };
 };
 
 // export type FormatType<T> = T extends JSONFormat ? GeminiResponse : string;
@@ -197,6 +191,7 @@ export type ChatAskOptions<F extends Format = TextFormat> = {
   format: F;
   data: [];
   stream?: false;
+  safetySettings: { category: HarmCategory; threshold: HarmBlockThreshold }[];
   jsonSchema: Schema | undefined;
 };
 

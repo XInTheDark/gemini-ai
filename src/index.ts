@@ -229,6 +229,8 @@ class Gemini {
 
     const contents = convertMessages(parsedOptions.messages);
 
+    console.log("contents", contents);
+
     let lastMessage;
     if (!Array.isArray(message) && typeof message !== "string") {
       if (message.role === "model") throw new Error("Please prompt with role as 'user'");
@@ -264,6 +266,7 @@ class Gemini {
     for (let model_idx = 0; model_idx < iter_models.length; model_idx++) {
       const model = iter_models[model_idx];
       const gemini = googleGemini.getGenerativeModel({ model: model });
+      console.log("model", model);
       const geminiChat = gemini.startChat({
         history: contents,
         generationConfig: generationConfig,
@@ -275,6 +278,7 @@ class Gemini {
       try {
         if (parsedOptions.stream) {
           response = await geminiChat.sendMessageStream(lastMessage);
+          console.log("sent message");
           return this.handleStream(response);
         } else {
           let streamResponse = await geminiChat.sendMessage(lastMessage);
@@ -366,11 +370,13 @@ class Chat {
       };
     }
 
+    console.log("parsedMessage", parsedMessage);
+    console.log("messages", this.messages);
+    console.log("parsedConfig", parsedConfig);
     const response = await this.gemini.ask(parsedMessage, {
       ...parsedConfig,
       format: Gemini.TEXT,
       messages: this.messages,
-      stream: parsedConfig.stream,
     });
 
     // this.messages.push(parsedMessage);
