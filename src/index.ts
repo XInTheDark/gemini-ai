@@ -265,7 +265,7 @@ class Gemini {
 
     for (let model_idx = 0; model_idx < iter_models.length; model_idx++) {
       const model = iter_models[model_idx];
-      const gemini = googleGemini.getGenerativeModel({ model: model });
+      const gemini = googleGemini.getGenerativeModel({ model: model}, {apiVersion: this.apiVersion});
       console.log("model", model);
       const geminiChat = gemini.startChat({
         history: contents,
