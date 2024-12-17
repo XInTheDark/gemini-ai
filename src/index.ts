@@ -277,6 +277,7 @@ class Gemini {
       let response;
       try {
         if (parsedOptions.stream) {
+          console.log("sending message");
           response = await geminiChat.sendMessageStream(lastMessage);
           console.log("sent message");
           return this.handleStream(response);
@@ -286,6 +287,7 @@ class Gemini {
           return response;
         }
       } catch (e) {
+        console.log("error", e);
         if (model_idx === iter_models.length - 1) {
           throw e;
         }
