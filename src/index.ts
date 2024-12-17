@@ -192,7 +192,7 @@ class Gemini {
   private handleStream = async function (response: GeminiResponseStream) {
     return (async function* () {
       for await (const chunk of response.stream) {
-        yield chunk;
+        yield chunk.text();
       }
     })();
   };
@@ -245,6 +245,8 @@ class Gemini {
       };
     }
 
+    lastMessage = [lastMessage];
+
     let systemInstruction =
       parsedOptions.systemInstruction !== ""
         ? {
@@ -278,6 +280,7 @@ class Gemini {
       try {
         if (parsedOptions.stream) {
           console.log("sending message");
+          // TODO: error here
           response = await geminiChat.sendMessageStream(lastMessage);
           console.log("sent message");
           return this.handleStream(response);
