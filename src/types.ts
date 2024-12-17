@@ -1,6 +1,7 @@
 import { ProxyAgent } from "undici";
 import { GenerateContentResult, GenerateContentStreamResult } from "@google/generative-ai";
 import { HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+import { TextPart, FileDataPart, InlineDataPart } from "@google/generative-ai";
 
 type FileType =
   | "image/png"
@@ -40,13 +41,8 @@ type FileType =
   | "text/rtf"
   | "application/pdf";
 
-type RemoteFilePart = { fileData: { mime_type: FileType; fileUri: string } };
-
-type InlineFilePart = { inline_data: { mime_type: FileType; data: string } };
-
-type TextPart = { text: string };
-
-export type Part = TextPart | RemoteFilePart | InlineFilePart;
+export type Part = TextPart | FileDataPart | InlineDataPart;
+export type { TextPart, FileDataPart, InlineDataPart };
 
 type Role = "user" | "model" | "system";
 

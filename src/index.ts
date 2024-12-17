@@ -17,7 +17,7 @@ import type {
   QueryBodyMap,
 } from "./types";
 
-import { SafetyError, getFileType, pairToMessage } from "./utils";
+import { SafetyError, getFileType, pairToMessage, convertMessages } from "./utils";
 
 // Official Gemini SDK
 import { GenerateContentResult, GoogleGenerativeAI } from "@google/generative-ai";
@@ -227,14 +227,7 @@ class Gemini {
 
     const safetySettings = parsedOptions.safetySettings;
 
-    const contents = [
-      ...parsedOptions.messages.flatMap((msg: [string, string] | Message) => {
-        if (Array.isArray(msg)) {
-          return pairToMessage(msg);
-        }
-        return msg;
-      }),
-    ];
+    const contents = convertMessages(parsedOptions.messages);
 
     let lastMessage;
     if (!Array.isArray(message) && typeof message !== "string") {
@@ -272,7 +265,6 @@ class Gemini {
       const model = iter_models[model_idx];
       const gemini = googleGemini.getGenerativeModel({ model: model });
       const geminiChat = gemini.startChat({
-        // @ts-ignore
         history: contents,
         generationConfig: generationConfig,
         safetySettings: safetySettings,

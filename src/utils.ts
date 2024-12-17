@@ -95,3 +95,15 @@ export const pairToMessage = (message: [string, string]): Message[] => {
     },
   ];
 };
+
+export const convertMessages = (messages: ([string, string] | Message)[]): Message[] => {
+  let convertedMessages: Message[] = [];
+  for (let message of messages) {
+    if (Array.isArray(message)) {
+      convertedMessages = convertedMessages.concat(pairToMessage(message));
+    } else {
+      convertedMessages.push(message);
+    }
+  }
+  return convertedMessages;
+};
