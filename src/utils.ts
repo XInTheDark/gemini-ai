@@ -97,13 +97,15 @@ export const pairToMessage = (message: [string, string]): Message[] => {
 };
 
 export const convertMessages = (messages: ([string, string] | Message)[]): Message[] => {
+  console.log("before: ", messages);
   let convertedMessages: Message[] = [];
   for (let message of messages) {
     if (Array.isArray(message)) {
-      convertedMessages = convertedMessages.concat(pairToMessage(message));
+      convertedMessages = [...convertedMessages, ...pairToMessage(message)];
     } else {
       convertedMessages.push(message);
     }
   }
+  console.log("after: ", convertedMessages);
   return convertedMessages;
 };
