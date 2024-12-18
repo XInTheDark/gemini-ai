@@ -245,8 +245,6 @@ class Gemini {
       };
     }
 
-    lastMessage = [lastMessage];
-
     let systemInstruction =
       parsedOptions.systemInstruction !== ""
         ? {
@@ -281,7 +279,6 @@ class Gemini {
       try {
         if (parsedOptions.stream) {
           console.log("sending message");
-          // TODO: error here
           response = await geminiChat.sendMessageStream(lastMessage);
           console.log("sent message");
           return this.handleStream(response);
